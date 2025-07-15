@@ -2,6 +2,7 @@ from src.data_load import load_data
 from src.cleaning_steps.remove_duplicates import remove_duplicates
 from src.cleaning_steps.standarize_column_names import standardize_column_names
 from src.cleaning_steps.drop_irrelevant_columns import drop_irrelevant_columns
+from src.cleaning_steps.handle_nulls import handle_nulls
 
 def data_cleaning():
 
@@ -22,6 +23,10 @@ def data_cleaning():
 
     # Eliminar columnas irrelevantes
     df = drop_irrelevant_columns(df)
+
+    # Gestionar valores faltantes
+
+    df = handle_nulls(df)
 
 
 

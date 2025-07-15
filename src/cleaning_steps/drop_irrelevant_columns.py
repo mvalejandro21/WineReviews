@@ -20,6 +20,12 @@ def drop_irrelevant_columns(df):
 
     cols_to_drop = list(set(empty_cols + constant_cols + manual_drop))
 
+    # Filtramos solo las columnas que realmente existen en el DataFrame
+    real_cols = [col for col in cols_to_drop if col in df.columns]
+
+    # Eliminamos las columnas existentes
+    df = df.drop(columns=real_cols, errors="ignore")
+
     print("🧾 [INFO] Columnas a eliminar:")
     print(cols_to_drop)
 
