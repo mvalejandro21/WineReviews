@@ -49,7 +49,7 @@ def eliminar_duplicados(df):
     Elimina filas duplicadas y reinicia el índice.
     """
     original_shape = df.shape[0]
-    df = df.drop_duplicates().reset_index(drop=True)
+    df.drop_duplicates(subset=['title'], inplace=True)
     print(f"✅ Duplicados eliminados. Filas eliminadas: {original_shape - df.shape[0]}")
     return df
 
@@ -118,7 +118,7 @@ def save_cleaned_data(df):
     Guarda el DataFrame limpio en un archivo CSV, creando el directorio si no existe.
     """
 
-
+    df = df.rename(columns={'unnamed_0': 'wine_id'})
     df.to_csv("data/cleaned_wine_data.csv")
     print("✅ Datos limpios guardados en: cleaned_wine_data.csv")
 
