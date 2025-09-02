@@ -15,7 +15,55 @@ st.set_page_config(
 # --- CARGAR DATOS ---
 @st.cache_data
 def load_data():
-    return pd.read_csv("../data/wine_final_dataset.csv")
+    # Lista de rutas posibles a probar
+    possible_paths = [
+        # Rutas relativas
+        "data/wine_final_dataset.csv",
+        "../data/wine_final_dataset.csv", 
+        "./data/wine_final_dataset.csv",
+        "wine_final_dataset.csv",
+        
+        # Rutas absolutas típicas
+        "/mount/src/winereviews/data/wine_final_dataset.csv",
+        "/app/data/wine_final_dataset.csv",
+        
+        # Rutas desde el directorio del script
+        str(Path(__file__).parent / "data" / "wine_final_dataset.csv"),
+        str(Path(__file__).parent.parent / "data" / "wine_final_dataset.csv"),
+        
+        # Otras rutas posibles
+        "app/data/wine_final_dataset.csv",
+    ]
+    
+    # Probar cada ruta
+    for csv_path in possible_paths:
+        try:
+            df = pd.read_csv(csv_path)
+            if not df.empty:
+                print(f"✅ Archivo encontrado en: {csv_path}")
+                return df
+        except FileNotFoundError:
+            continue
+        except Exception as e:
+            print(f"⚠️ Error con {csv_path}: {str(e)}")
+            continue
+    
+    # Si ninguna ruta funciona, mostrar error
+    raise FileNotFoundError("No se pudo encontrar wine_final_dataset.csv en ninguna ruta probada")
+
+# Cargar datos
+try:
+    df = load_data()
+except FileNotFoundError as e:
+    st.error(f"❌ {str(e)}")
+    st.info("""
+    **Solución:**
+    1. Asegúrate de que el archivo wine_final_dataset.csv existe
+    2. Verifica que esté en la carpeta data/ del proyecto
+    3. Si estás en Streamlit Cloud, sube el archivo a GitHub
+    """)
+    st.stop()
+
 
 df = load_data()
 
