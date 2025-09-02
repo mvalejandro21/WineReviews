@@ -6,6 +6,8 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
+from pathlib import Path
+import os
 
 # SOLUCIÓN AL ERROR: Aumentar el límite de celdas renderizables
 pd.set_option("styler.render.max_elements", 1000000)
@@ -18,14 +20,59 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Cargar datos con caché
+# Cargar datos con caché - PRUEBA MÚLTIPLES RUTAS
 @st.cache_data
 def load_data():
-    df = pd.read_csv("../data/wine_final_dataset.csv")
-    return df
+    # Lista de rutas posibles a probar
+    possible_paths = [
+        # Rutas relativas
+        "data/wine_final_dataset.csv",
+        "../data/wine_final_dataset.csv", 
+        "./data/wine_final_dataset.csv",
+        "wine_final_dataset.csv",
+        
+        # Rutas absolutas típicas
+        "/mount/src/winereviews/data/wine_final_dataset.csv",
+        "/app/data/wine_final_dataset.csv",
+        
+        # Rutas desde el directorio del script
+        str(Path(__file__).parent / "data" / "wine_final_dataset.csv"),
+        str(Path(__file__).parent.parent / "data" / "wine_final_dataset.csv"),
+        
+        # Otras rutas posibles
+        "app/data/wine_final_dataset.csv",
+    ]
+    
+    # Probar cada ruta
+    for csv_path in possible_paths:
+        try:
+            df = pd.read_csv(csv_path)
+            if not df.empty:
+                print(f"✅ Archivo encontrado en: {csv_path}")
+                return df
+        except FileNotFoundError:
+            continue
+        except Exception as e:
+            print(f"⚠️ Error con {csv_path}: {str(e)}")
+            continue
+    
+    # Si ninguna ruta funciona, mostrar error
+    raise FileNotFoundError("No se pudo encontrar wine_final_dataset.csv en ninguna ruta probada")
 
-df = load_data()
+# Cargar datos
+try:
+    df = load_data()
+except FileNotFoundError as e:
+    st.error(f"❌ {str(e)}")
+    st.info("""
+    **Solución:**
+    1. Asegúrate de que el archivo wine_final_dataset.csv existe
+    2. Verifica que esté en la carpeta data/ del proyecto
+    3. Si estás en Streamlit Cloud, sube el archivo a GitHub
+    """)
+    st.stop()
 
+# El resto de tu código permanece exactamente igual...
 # Inicializar estados de sesión
 if 'selected_countries' not in st.session_state:
     st.session_state.selected_countries = df['country'].unique().tolist()
@@ -186,7 +233,7 @@ st.info(f"""
 📊 Mostrando: {len(filtered_df)} vinos
 """)
 
-# ... (El resto del código permanece igual hasta la sección de la tabla) ...
+# ... (El resto del código permanece igual) ...
 
 # Tabla de resultados
 st.divider()
