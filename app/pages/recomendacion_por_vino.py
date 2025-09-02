@@ -63,8 +63,7 @@ except FileNotFoundError as e:
     """)
     st.stop()
 
-
-df = cargar_datos()
+df = load_data()
 
 # Preparación de datos
 @st.cache_data
