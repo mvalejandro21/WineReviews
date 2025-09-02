@@ -165,7 +165,7 @@ with st.sidebar:
     st.caption("© 2023 Sommelier AI • Todos los derechos reservados")
 
 # Selector de vino principal
-with st.container(border=True):
+with st.container():
     st.subheader("🍇 Selecciona un vino que te guste")
     vino_seleccionado = st.selectbox(
         "Busca en nuestra bodega:",
@@ -182,7 +182,7 @@ if vino_seleccionado:
     # Información del vino seleccionado
     selected_wine = df[df['title'] == vino_seleccionado].iloc[0]
     
-    with st.container(border=True):
+    with st.container():
         col1, col2 = st.columns([1, 3])
         
         with col1:
